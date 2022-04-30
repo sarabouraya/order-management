@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+
+    <changeSet id="1651306616045-1" author="sbouraya">
+        <createTable tableName="customers">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_customers"/>
+            </column>
+            <column name="first_name" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="phone" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="email" constraintName="uc_customers_email" tableName="customers"/>
+        <addUniqueConstraint columnNames="phone" constraintName="uc_customers_phone" tableName="customers"/>
+    </changeSet>
+    <changeSet id="1651307456481-1" author="sbouraya">
+        <createTable tableName="orders">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_orders"/>
+            </column>
+            <column name="date_time" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="customer_id" type="BIGINT"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="orders" constraintName="FK_ORDERS_ON_CUSTOMER" referencedColumnNames="id" referencedTableName="customers"/>
+    </changeSet>
+    <changeSet id="1651307568242-1" author="sbouraya">
+        <createTable tableName="products">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_products"/>
+            </column>
+            <column name="product_name" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="register_number" type="VARCHAR(31)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="BIGINT"/>
+        </createTable>
+        <createTable tableName="categories">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_categories"/>
+            </column>
+            <column name="name" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="name" constraintName="uc_categories_name" tableName="categories"/>
+        <createTable tableName="product_categories">
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_product_categories"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_product_categories"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="category_id" baseTableName="product_categories" constraintName="fk_procat_on_category" referencedColumnNames="id" referencedTableName="categories"/>
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="product_categories" constraintName="fk_procat_on_product" referencedColumnNames="id" referencedTableName="products"/>
+
+    </changeSet>
+    <changeSet id="1651307780646-1" author="sbouraya">
+        <addForeignKeyConstraint baseColumnNames="customer_id" baseTableName="orders" constraintName="FK_ORDERS_ON_CUSTOMER" referencedColumnNames="id" referencedTableName="customers"/>
+        <createTable tableName="order_line">
+            <column name="quantity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_order_line"/>
+            </column>
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_order_line"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="order_line" constraintName="FK_ORDER_LINE_ON_ORDER" referencedColumnNames="id" referencedTableName="orders"/>
+        <addForeignKeyConstraint baseColumnNames="product_id" baseTableName="order_line" constraintName="FK_ORDER_LINE_ON_PRODUCT" referencedColumnNames="id" referencedTableName="products"/>
+
+    </changeSet>
+    <changeSet id="1651307780646-2001" author="sbouraya">
+        <loadData tableName="customers" file="db/changelog/seeds/customers.csv">
+            <column header="first_name" name="first_name" type="varchar(31)" />
+            <column header="last_name" name="last_name" type="varchar(31)" />
+            <column header="email" name="email" type="varchar(255)" />
+            <column header="phone" name="phone" type="varchar(31)" />
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>
